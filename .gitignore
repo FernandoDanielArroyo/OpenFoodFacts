@@ -1,5 +1,8 @@
 # ignoring .ipynb files
 
-*iptnb/ 
+ipynb-checkpoints/ 
 *.ipynb
 
+# ignore images
+
+data/img
