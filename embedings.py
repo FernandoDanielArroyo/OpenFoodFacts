@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 model_ckpt = 'microsoft/swin-tiny-patch4-window7-224'
 extractor = AutoFeatureExtractor.from_pretrained(model_ckpt)
-model = AutoModel.from_pretrained(model_ckpt)
+model = AutoModel.from_pretrained(model_ckpt).to('cuda:0')
 data = []
 index = []
 path = Path('data/img')
@@ -16,7 +16,7 @@ for file in tqdm(path.rglob('*.jpg')):
     # print(file)
     image = Image.open(file)
     try:
-        inputs = extractor(image, return_tensors="pt")
+        inputs = extractor(image, return_tensors="pt").to('cuda:0')
         # print(inputs['pixel_values'].shape)
         with torch.no_grad():
             outputs = model(**inputs)
