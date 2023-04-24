@@ -3,3 +3,6 @@
 ipynb-checkpoints/ 
 *.ipynb
 
+# ignore images
+
+data/img
