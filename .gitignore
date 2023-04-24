@@ -1,0 +1,5 @@
+# ignoring .ipynb files
+
+*iptnb/ 
+*.ipynb
+
