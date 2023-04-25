@@ -4,15 +4,22 @@ import pandas as pd
 import torch
 from transformers import AutoFeatureExtractor, AutoModel
 from tqdm import tqdm
+import argparse
 
-model_ckpt = 'microsoft/swin-tiny-patch4-window7-224'
+parser = argparse.ArgumentParser()
+parser.add_argument('model_checkpoints')
+args = parser.parse_args()
+
+model_ckpt = args.model_checkpoints
+# model_ckpt = 'microsoft/swin-tiny-patch4-window7-224'
 extractor = AutoFeatureExtractor.from_pretrained(model_ckpt)
 model = AutoModel.from_pretrained(model_ckpt).to('cuda:0')
 data = []
 index = []
 path = Path('data/img')
 
-for file in tqdm(path.rglob('*.jpg')):
+total = len(list(path.rglob('*.jpg')))
+for file in tqdm(path.rglob('*.jpg'), total=total):
     # print(file)
     image = Image.open(file)
     try:
@@ -31,7 +38,7 @@ for file in tqdm(path.rglob('*.jpg')):
 df = pd.DataFrame(data)
 df.index = index
 print(df.head())
-df.to_csv('data/embedding_swin.csv')
+df.to_csv(f'data/{model_ckpt.split("/")[1]}.csv')
 
 
 
