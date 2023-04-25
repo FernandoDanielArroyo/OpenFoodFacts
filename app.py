@@ -40,8 +40,16 @@ embedding_data = load_embedding_data('data/vit-base-patch16-224.csv')
 embedding_data.index.name = 'image_name'
 cosines = get_cosine_distances(embedding_data)
 st.header('Exploration of OpenfoodFact using Product Image embeddings')
-
-choice_image = st.selectbox(label='Select an image', options=images)
+choice_image = st.selectbox(label='Select an image', options=images, index=0)
+cols =  st.columns([1,1])
+prev = cols[0].button(label='Previous')
+next = cols[1].button(label='Next')
+index_image = images.index(choice_image)
+if prev:
+    index_image = index_image - 1
+if next:
+    index_image = index_image + 1
+choice_image = images[index_image] 
 if choice_image:
     product_name = product_data[choice_image.stem.split('_')[0]]['product_name']
     st.write('Selected image')
