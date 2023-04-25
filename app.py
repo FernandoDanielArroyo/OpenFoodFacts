@@ -39,17 +39,32 @@ product_data = load_products_name()
 embedding_data = load_embedding_data('data/vit-base-patch16-224.csv')
 embedding_data.index.name = 'image_name'
 cosines = get_cosine_distances(embedding_data)
+if 'counter' not in st.session_state: 
+    st.session_state['counter'] = 0
 st.header('Exploration of OpenfoodFact using Product Image embeddings')
-choice_image = st.selectbox(label='Select an image', options=images, index=0)
-cols =  st.columns([1,1])
-prev = cols[0].button(label='Previous')
-next = cols[1].button(label='Next')
-index_image = images.index(choice_image)
-if prev:
-    index_image = index_image - 1
-if next:
-    index_image = index_image + 1
-choice_image = images[index_image] 
+
+# choice_image = st.selectbox(label='Select an image', options=images, index=0)
+choice_image = images[st.session_state['counter']]
+
+cols =  st.columns([3,3,1])
+similar = cols[0].button(label='Similar')
+not_similar = cols[1].button(label='Not similar')
+
+if similar:
+    st.session_state['counter'] += 1
+    
+if not_similar:
+    st.session_state['counter'] += 1
+
+if st.session_state['counter'] >= 1:
+    previous = cols[2].button(label='previous')
+    if previous:
+        st.session_state['counter'] -= 1
+
+
+choice_image = images[st.session_state['counter']] 
+st.header(st.session_state['counter'])
+
 if choice_image:
     product_name = product_data[choice_image.stem.split('_')[0]]['product_name']
     st.write('Selected image')
