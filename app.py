@@ -41,6 +41,15 @@ embedding_data.index.name = 'image_name'
 cosines = get_cosine_distances(embedding_data)
 if 'counter' not in st.session_state: 
     st.session_state['counter'] = 0
+
+datas = [('image_list', images),
+         ('product_data', product_data),
+         ('embedding_data', embedding_data),
+         ('cosines', cosines)]
+for key, val in datas:
+    if key not in st.session_state:
+        st.session_state[key] = val
+
 st.header('Exploration of OpenfoodFact using Product Image embeddings')
 
 # choice_image = st.selectbox(label='Select an image', options=images, index=0)
