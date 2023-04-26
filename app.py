@@ -104,8 +104,4 @@ if st.session_state['counter'] >= 1:
     previous = cols[2].button(label='previous')
     if previous:
         st.session_state['counter'] -= 1
-
-choice_image = images[st.session_state['counter']] 
-
-
     
