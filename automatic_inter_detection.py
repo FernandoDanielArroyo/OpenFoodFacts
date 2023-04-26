@@ -39,5 +39,5 @@ def main():
         json.dump(duplicates, f)
 
 
-
-
+if __name__ == '__main__':
+    main()
