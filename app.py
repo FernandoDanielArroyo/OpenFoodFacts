@@ -13,6 +13,8 @@ def list_images():
     list_img = list(path_images.rglob('*.jpg'))
     return list_img
 
+
+
 @st.cache_data
 def load_products_name():
     with open('data/label_of_products.json') as f:
@@ -21,7 +23,7 @@ def load_products_name():
 
 @st.cache_data
 def load_embedding_data(selected_embedding_file):
-    df = pd.read_csv(selected_embedding_file, index_col=0)
+    df = pd.read_csv(selected_embedding_file, index_col=0).astype('float16')
     return df
 
 @st.cache_resource
@@ -45,27 +47,51 @@ cols =  st.columns([1,1])
 prev = cols[0].button(label='Previous')
 next = cols[1].button(label='Next')
 index_image = images.index(choice_image)
+
+
+
+
 if prev:
     index_image = index_image - 1
 if next:
     index_image = index_image + 1
-choice_image = images[index_image] 
+choice_image = images[index_image]
 if choice_image:
-    product_name = product_data[choice_image.stem.split('_')[0]]['product_name']
+    category = choice_image.stem.split('_')[0]
+    product_name = product_data[category]['product_name']
     st.write('Selected image')
     st.write(f'{product_name=}')
     image = Image.open(choice_image)
     st.image(image)
 
+
     st.header('Visualisation of close images')
     # st.dataframe(embedding_data.head())
     # st.dataframe(embedding_data.loc[choice_image.stem])
-    top_5 = cosines.loc[choice_image.stem].sort_values().head(6)
-    images = []
-    captions = []
-    for index, distance in top_5.items():
-        images.append(Image.open(f'data/img/{index}.jpg'))
-        product_name = product_data[index.split('_')[0]]['product_name']
-        captions.append(f'{product_name}_{distance}')
-    st.image(images, captions)
+    query = cosines.loc[choice_image.stem].sort_values()
+    query.name = 'distance'
+    query = query.reset_index()
+    query['categories'] = query['image_name'].apply(lambda x: x.split('_')[0])
+    query = query[query['categories']!= category].head(1)
+
+    st.dataframe(query)
+    image = Image.open(f'data/img/{query.iloc[0, 0]}.jpg')
+    st.image(image)
+    
+
+
+    # add category product
+    # category_image_1= top_2[0].stem.split('_')[0]
+    # category_image_2= top_2[1].stem.split('_')[0]
+    # if category_image_1 != category_image_2:
+    #     images = []
+    #     captions = []
+    #     for index, distance in top_2.items():
+    #         images.append(Image.open(f'data/img/{index}.jpg'))
+    #         product_name = product_data[index.split('_')[0]]['product_name']
+    #         captions.append(f'{product_name}______{distance}______')
+    #     st.image(images, captions)
+
+
+
     # st.dataframe(cosines.loc[choice_image.stem].sort_values().head(5))
