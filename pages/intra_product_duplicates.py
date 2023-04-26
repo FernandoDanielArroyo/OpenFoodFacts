@@ -9,19 +9,25 @@ if 'counter_categories' not in st.session_state:
 
 @st.cache_resource
 def get_cosine_distances(embedding_data):
-    if 'label' in embedding_data:
-        df = embedding_data.drop('label')
+    if 'label' in embedding_data.columns:
+        df = embedding_data.drop(columns = 'label')
     else:
         df = embedding_data.copy()
     cosines = cosine_distances(df)
     cosines = pd.DataFrame(cosines, index=df.index, columns=df.index)
     return cosines
 
+@st.cache_data
+def load_embedding():
+    images_embedding = pd.read_csv('data/vit-base-patch16-224.csv', index_col=0)
+    images_embedding.index.name = 'image_name'
+    images_embedding = images_embedding.reset_index()
+    return images_embedding
 
 images = st.session_state['image_list']
 product_data = st.session_state['product_data']
 cosines = st.session_state['cosines']
-images_embedding = st.session_state['embedding_data'].reset_index()
+images_embedding = load_embedding()
 images_embedding['categories'] = images_embedding['image_name'].apply(lambda x: x.split('_')[0])
 images_embedding = images_embedding.set_index('categories')
 
@@ -44,7 +50,7 @@ st.write(f'Product name : {product_name}  Category id : {choice_category}')
 # Get all images from the selected category
 all_images_of_category = images_embedding.loc[choice_category]
 # st.dataframe(all_images_of_category)
-show_all = st.radio('show_all', options=[True, False], horizontal=True)
+show_all = st.radio('show_all', options=[True, False], horizontal=True, index=1)
 if show_all:
     images = []
     if type(all_images_of_category) == pd.DataFrame:
