@@ -32,7 +32,7 @@ closest_img_category = closest_img_name.split('_')[0]
 closest_product_name = product_names[closest_img_category]['product_name']
 img_1 = Image.open(f'data/img/{selected_image}.jpg')
 img_2 = Image.open(f'data/img/{closest_img_name}.jpg')
-st.write(f'{closest_product_name=}   {distance=:.3f}')
+st.write(f'{closest_product_name=}  {closest_img_category=} {distance=:.3f}')
 st.image([img_1, img_2])
 
 cols =  st.columns([2,2,1])
