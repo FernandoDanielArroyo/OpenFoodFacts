@@ -36,7 +36,7 @@ To separate the two categories (products and nutritional information), we used a
 Embedding on a subsets of images are able to be observed using tensorboard and build_tensorboard_label.py
  
 ```
-python build_tensorboard_label.py
+python build_tensorboard_visu.py
 tensorboard --logdir embedding_visu_log
 ```
 
