@@ -5,7 +5,8 @@ from PIL import Image
 def read_automatic_analysis():
     with open('data/inter_product_duplicated.json') as f:
         data = json.load(f)
-    return data
+    sorted_data = dict(sorted(data.items(), key=lambda item: item[1][1]))
+    return sorted_data
 
 @st.cache_data
 def load_products_name():
