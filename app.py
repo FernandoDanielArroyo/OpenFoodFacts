@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_distances
 
 st.set_page_config(layout="wide")
-
+# Functions
 @st.cache_data
 def list_images(embedding_df):
     list_img = embedding_df.index.to_list()
@@ -34,12 +34,13 @@ def get_cosine_distances(embedding_data):
     cosines = pd.DataFrame(cosines, index=df.index, columns=df.index)
     return cosines
 
-
+# Get the Data
 product_data = load_products_name()
 embedding_data = load_embedding_data('data/labels_vit_kmeans_2.csv')
 embedding_data.index.name = 'image_name'
 images = list_images(embedding_data)
 cosines = get_cosine_distances(embedding_data)
+
 if 'counter' not in st.session_state: 
     st.session_state['counter'] = 0
 
@@ -51,6 +52,7 @@ for key, val in datas:
     if key not in st.session_state:
         st.session_state[key] = val
 
+# Visualisation
 st.header('Deduplicating OpenfoodFact images')
 st.subheader('Visualisation of close images')
 
