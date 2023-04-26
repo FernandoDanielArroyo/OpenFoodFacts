@@ -31,6 +31,8 @@ When exploring similarity of images, we observed that duplicates of products wer
 
 add examples img
 
+If locahost does not display data please select 'projector' on the drop-down menu at the top right.   
+
 ### Clustering : Removing labels 
 To separate the two categories (products and nutritional information), we used a simple clustering based on vision embeddings.
 Embedding on a subsets of images are able to be observed using tensorboard and build_tensorboard_label.py
