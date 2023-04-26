@@ -23,13 +23,20 @@ def print_statistics(data, categories):
     nb_duplicates = []
     for v in data.values():
         nb_duplicates.append(len(v))
+
     average_number_of_duplicates = np.mean(nb_duplicates)
     max_number_of_duplicates = np.max(nb_duplicates)
+    min_number_of_duplicates = np.min(nb_duplicates)
+    median_number_of_duplicates = np.median(nb_duplicates)
 
+    print(f'nb products {len(categories)}')
     print(f'{number_of_categories_with_duplications=}')
     print(f'{percentage_of_categories_with_duplications=:.3f}')
     print(f'{average_number_of_duplicates=:.2f}')
+    print(f'{median_number_of_duplicates=}')
     print(f'{max_number_of_duplicates=}')
+    print(f'{min_number_of_duplicates=}')
+
 
 def main():
 
