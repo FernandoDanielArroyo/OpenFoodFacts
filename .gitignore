@@ -6,3 +6,4 @@ ipynb-checkpoints/
 # ignore images
 
 data/img
+embedding_visu_log

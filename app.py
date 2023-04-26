@@ -8,12 +8,9 @@ from sklearn.metrics.pairwise import cosine_distances
 st.set_page_config(layout="wide")
 
 @st.cache_data
-def list_images():
-    path_images = Path('data/img')
-    list_img = list(path_images.rglob('*.jpg'))
+def list_images(embedding_df):
+    list_img = embedding_df.index.to_list()
     return list_img
-
-
 
 @st.cache_data
 def load_products_name():
@@ -24,74 +21,89 @@ def load_products_name():
 @st.cache_data
 def load_embedding_data(selected_embedding_file):
     df = pd.read_csv(selected_embedding_file, index_col=0).astype('float16')
+    df = df[df['label'] == 1]
     return df
 
 @st.cache_resource
 def get_cosine_distances(embedding_data):
-    if 'label' in embedding_data:
-        df = embedding_data.drop('label')
+    if 'label' in embedding_data.columns:
+        df = embedding_data.drop(columns='label')
     else:
         df = embedding_data.copy()
     cosines = cosine_distances(df)
     cosines = pd.DataFrame(cosines, index=df.index, columns=df.index)
     return cosines
 
-images = list_images()
+
 product_data = load_products_name()
-embedding_data = load_embedding_data('data/vit-base-patch16-224.csv')
+embedding_data = load_embedding_data('data/labels_vit_kmeans_2.csv')
 embedding_data.index.name = 'image_name'
+images = list_images(embedding_data)
 cosines = get_cosine_distances(embedding_data)
-st.header('Exploration of OpenfoodFact using Product Image embeddings')
-choice_image = st.selectbox(label='Select an image', options=images, index=0)
-cols =  st.columns([1,1])
-prev = cols[0].button(label='Previous')
-next = cols[1].button(label='Next')
-index_image = images.index(choice_image)
+if 'counter' not in st.session_state: 
+    st.session_state['counter'] = 0
+
+datas = [('image_list', images),
+         ('product_data', product_data),
+         ('embedding_data', embedding_data),
+         ('cosines', cosines)]
+for key, val in datas:
+    if key not in st.session_state:
+        st.session_state[key] = val
+
+st.header('Deduplicating OpenfoodFact images')
+st.subheader('Visualisation of close images')
+
+choice_image = images[st.session_state['counter']]
 
 
+#image columns
+col1, col2 = st.columns(2)
 
-
-if prev:
-    index_image = index_image - 1
-if next:
-    index_image = index_image + 1
-choice_image = images[index_image]
 if choice_image:
-    category = choice_image.stem.split('_')[0]
+    category = choice_image.split('_')[0]
     product_name = product_data[category]['product_name']
-    st.write('Selected image')
-    st.write(f'{product_name=}')
-    image = Image.open(choice_image)
-    st.image(image)
+    st.text('Index selected image: ')
+    st.session_state['counter']
+    image = Image.open(f'data/img/{choice_image}.jpg')
+    with col1:
+        st.text(product_name)
+        st.image(image)
 
-
-    st.header('Visualisation of close images')
-    # st.dataframe(embedding_data.head())
-    # st.dataframe(embedding_data.loc[choice_image.stem])
-    query = cosines.loc[choice_image.stem].sort_values()
+    query = cosines.loc[choice_image].sort_values()
     query.name = 'distance'
     query = query.reset_index()
     query['categories'] = query['image_name'].apply(lambda x: x.split('_')[0])
     query = query[query['categories']!= category].head(1)
-
-    st.dataframe(query)
-    image = Image.open(f'data/img/{query.iloc[0, 0]}.jpg')
-    st.image(image)
     
+    image = Image.open(f'data/img/{query.iloc[0, 0]}.jpg')
+
+    category2 = query.iloc[0, 0].split('_')[0]
+    product_name2 = product_data[category2]['product_name']
+
+    with col2:
+        st.text(product_name2)
+        st.image(image)
+
+st.dataframe(query)
+
+# buttons
+cols =  st.columns([3,3,1])
+similar = cols[0].button(label='Similar')
+not_similar = cols[1].button(label='Not similar')
+
+if similar:
+    st.session_state['counter'] += 1
+    
+if not_similar:
+    st.session_state['counter'] += 1
+
+if st.session_state['counter'] >= 1:
+    previous = cols[2].button(label='previous')
+    if previous:
+        st.session_state['counter'] -= 1
+
+choice_image = images[st.session_state['counter']] 
 
 
-    # add category product
-    # category_image_1= top_2[0].stem.split('_')[0]
-    # category_image_2= top_2[1].stem.split('_')[0]
-    # if category_image_1 != category_image_2:
-    #     images = []
-    #     captions = []
-    #     for index, distance in top_2.items():
-    #         images.append(Image.open(f'data/img/{index}.jpg'))
-    #         product_name = product_data[index.split('_')[0]]['product_name']
-    #         captions.append(f'{product_name}______{distance}______')
-    #     st.image(images, captions)
-
-
-
-    # st.dataframe(cosines.loc[choice_image.stem].sort_values().head(5))
+    
