@@ -2,7 +2,10 @@
 
 This project aims to resolve the following github issue : https://github.com/openfoodfacts/openfoodfacts-ai/issues/203.
 
-We want to detect duplicated products from images and duplicated images in each product. 
+We want to detect duplicated products from images.
+We identified the following tasks:
+    - identify similar images in each product
+    - identity similar images in different product (duplicated products) 
 
 ## Data
 
@@ -14,7 +17,8 @@ Id of product codes are available in the images_downloaded.txt in data/.
 Features from images were extracted using :huggingface: implementation of visual transformers (ViT, Swin).
 Embeddings are able to be extracted using the embedings.py script
 ```
-python embedings.py $HUGGINGFACE_MODEL
+python embedings.py google/vit-base-patch16-224
+python embedings.py microsoft/swin-tiny-patch4-window7-224
 ```
 Limitations: 
 - only works images per images (no batching)
@@ -29,20 +33,18 @@ Similarity was proposed using cosine distance.
 
 When exploring similarity of images, we observed that duplicates of products were able to be detected but images containing nutritional information/bar code  were not able to be separated correctly. We used clustering to try to separate between images of products and images of nutritional labels/barcodes.
 
-add examples img
-
 
 ### Clustering : Removing labels 
-To separate the two categories (products and nutritional information), we used a simple clustering based on vision embeddings.
-Embedding on a subsets of images are able to be observed using tensorboard and build_tensorboard_label.py
+To separate the two categories (products and nutritional information), we used a simple clustering (kmeans, 2 clusters) based on vision embeddings.
+Embedding on a subsets of images are able to be observed using tensorboard (observed on a subset of 1k images)
 
 ```
 python build_tensorboard_visu.py
 tensorboard --logdir embedding_visu_log
 ```
 If tensorboard does not display data please select 'projector' on the drop-down menu at the top right.   
+We observe that class 0 is mainly nutritional labels/bar codes and class 1 mainly products.
 
-add examples img
 
 ## Application to facilitate removal of duplicates products
 
@@ -52,13 +54,15 @@ We decided to use a streamlit web app to facilitate user detection of duplicated
 streamlit run app.py
 ```
 
-ADD MORE DETAIL FOR THE DIFFERENTS APP
-For each images in the dataset, 
-we present the user with the closest match (smallest cosine distance) of other images of a different categories.
-The user is showed more information concerning the products :
-- product names
-- number of images by product
-- food categories
+List of applications available:
+- app : explore close images in different products (no order)
+- intra product duplicates : explore closes images in the same product (no order)
 
-The user is able to validate that the products are similar and the next pair of images are presented.
-Data entered by the user should be stored (which format ?)
+- explore inter product duplicates : images pair are ordered by the cosine distance (**run automatic_inter_detection**)
+- explore intra product duplicates : for each product show detected images pair (**run automatic_intra_detection before**)
+
+Limitations:
+- code for this part is not commentated
+- user inputs are not saved and not consistent between applications
+- visual bug when changing images using buttons 
+- naming of different pages is bad
