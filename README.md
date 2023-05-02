@@ -2,10 +2,14 @@
 
 This project aims to resolve the following github issue : https://github.com/openfoodfacts/openfoodfacts-ai/issues/203.
 
-We want to detect duplicated products from images.
+We want to detect duplicated products from images.  
 We identified the following tasks:
-    - identify similar images in each product
-    - identity similar images in different product (duplicated products) 
+- identify similar images in each product
+- identity similar images in different product (duplicated products) 
+
+## Env
+
+use conda and env.yaml 
 
 ## Data
 
@@ -14,7 +18,7 @@ Id of product codes are available in the images_downloaded.txt in data/.
 
 ## Features
 
-Features from images were extracted using :huggingface: implementation of visual transformers (ViT, Swin).
+Features from images were extracted using huggingface implementation of visual transformers (ViT, Swin).
 Embeddings are able to be extracted using the embedings.py script
 ```
 python embedings.py google/vit-base-patch16-224
@@ -58,11 +62,11 @@ List of applications available:
 - app : explore close images in different products (no order)
 - intra product duplicates : explore closes images in the same product (no order)
 
-- explore inter product duplicates : images pair are ordered by the cosine distance (**run automatic_inter_detection**)
+- explore inter product duplicates : images pair are ordered by the cosine distance (**run automatic_inter_detection before**)
 - explore intra product duplicates : for each product show detected images pair (**run automatic_intra_detection before**)
 
 Limitations:
 - code for this part is not commentated
 - user inputs are not saved and not consistent between applications
-- visual bug when changing images using buttons 
 - naming of different pages is bad
+- visual bug when changing images using buttons 
